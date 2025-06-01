@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            min-width: 300px;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .header p {
+            margin: 5px 0 0 0;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .status {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .status-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .status-value {
+            font-size: 13px;
+            font-weight: 600;
+            padding: 2px 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+        }
+
+        .friends-list {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .friends-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .friend-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+
+        .friend-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .no-friends {
+            text-align: center;
+            opacity: 0.7;
+            font-size: 12px;
+            font-style: italic;
+        }
+
+        .error {
+            background: rgba(255, 87, 87, 0.2);
+            border: 1px solid rgba(255, 87, 87, 0.3);
+            color: #ffb3b3;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .success {
+            background: rgba(87, 255, 87, 0.2);
+            border: 1px solid rgba(87, 255, 87, 0.3);
+            color: #b3ffb3;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 10px;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>🎴 Hanabi Utilities</h1>
+        <p>Monitor your friends' table activity</p>
+    </div>
+
+    <div id="content">
+        <div class="status">
+            <div class="status-item">
+                <span class="status-label">Extension Status:</span>
+                <span class="status-value" id="extension-status">Loading...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Site Status:</span>
+                <span class="status-value" id="site-status">Checking...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Friends Count:</span>
+                <span class="status-value" id="friends-count">-</span>
+            </div>
+        </div>
+
+        <div class="friends-list">
+            <div class="friends-title">Your Friends:</div>
+            <div id="friends-container">
+                <div class="no-friends">Loading friends list...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        Notifications will appear when friends join new tables
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>

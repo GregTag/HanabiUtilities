@@ -33,15 +33,20 @@
         return foundFriends;
     }
 
-    // Function to send notification
-    function sendNotification(tableName, friendNames, tableId) {
+    // Function to send table event to background for processing
+    function sendTableEvent(data) {
+        const friends = window.globals2.friends;
+        const friendsInTable = hasFriends(data.players, friends);
+
         window.postMessage({
             source: 'hanabi-utilities',
-            type: 'FRIEND_JOINED_TABLE',
+            type: 'TABLE_EVENT',
             data: {
-                tableName: tableName,
-                friends: friendNames,
-                tableId: tableId,
+                tableName: data.name,
+                tableId: data.id,
+                playerCount: data.players.length,
+                friends: friendsInTable,
+                hasPassword: data.passwordProtected,
                 timestamp: Date.now()
             }
         }, window.location.origin);
@@ -58,7 +63,7 @@
 
         // Our custom callback wrapper
         window.globals2.conn.callbacks.table = function (data) {
-            // Call original callback first if it exists
+            // Call original callback first
             originalTableCallback(data);
 
             console.log(data);
@@ -66,12 +71,7 @@
             try {
                 // Check conditions: not joined, not running, has players
                 if (!data.joined && !data.running && data.players && data.players.length > 0) {
-                    const friends = window.globals2.friends;
-                    const friendsInTable = hasFriends(data.players, friends);
-                    console.log(`Hanabi Utilities: Friends found in table ${data.name}:`, friendsInTable);
-                    if (friendsInTable.length > 0) {
-                        sendNotification(data.name, friendsInTable, data.id);
-                    }
+                    sendTableEvent(data);
                 }
             } catch (error) {
                 console.error('Hanabi Utilities: Error in table callback:', error);

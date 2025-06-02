@@ -62,6 +62,73 @@
             border-radius: 12px;
         }
 
+        .settings {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .settings-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            opacity: 0.9;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .setting-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .setting-label {
+            font-size: 12px;
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .setting-description {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-top: 2px;
+        }
+
+        .toggle {
+            position: relative;
+            width: 40px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle.active {
+            background: rgba(87, 255, 87, 0.4);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle.active .toggle-slider {
+            transform: translateX(20px);
+        }
+
         .friends-list {
             background: rgba(255, 255, 255, 0.1);
             padding: 15px;
@@ -146,6 +213,28 @@
             </div>
         </div>
 
+        <div class="settings">
+            <div class="settings-title">Notification Settings:</div>
+            <div class="setting-item">
+                <div class="setting-label">
+                    Friend Notifications
+                    <div class="setting-description">Notify when friends join tables</div>
+                </div>
+                <div class="toggle active" id="friend-notifications-toggle">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+            <div class="setting-item">
+                <div class="setting-label">
+                    All Open Tables
+                    <div class="setting-description">Notify for all open tables (no password)</div>
+                </div>
+                <div class="toggle" id="all-tables-toggle">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+        </div>
+
         <div class="friends-list">
             <div class="friends-title">Your Friends:</div>
             <div id="friends-container">
@@ -155,7 +244,7 @@
     </div>
 
     <div class="footer">
-        Notifications will appear when friends join new tables
+        Click toggles above to change notification preferences
     </div>
 
     <script src="popup.js"></script>

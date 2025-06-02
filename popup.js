@@ -4,10 +4,24 @@ document.addEventListener('DOMContentLoaded', function () {
     const siteStatus = document.getElementById('site-status');
     const friendsCount = document.getElementById('friends-count');
     const friendsContainer = document.getElementById('friends-container');
+    const friendNotificationsToggle = document.getElementById('friend-notifications-toggle');
+    const allTablesToggle = document.getElementById('all-tables-toggle');
 
     // Update extension status
     extensionStatus.textContent = 'Active';
     extensionStatus.style.background = 'rgba(87, 255, 87, 0.3)';
+
+    // Load settings
+    loadSettings();
+
+    // Set up toggle event listeners
+    friendNotificationsToggle.addEventListener('click', () => {
+        toggleSetting('friendNotifications', friendNotificationsToggle);
+    });
+
+    allTablesToggle.addEventListener('click', () => {
+        toggleSetting('allTablesNotifications', allTablesToggle);
+    });
 
     // Check if we're on the correct site and get friends list
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -45,6 +59,38 @@ document.addEventListener('DOMContentLoaded', function () {
             showError('Please navigate to hanab.live to use this extension');
         }
     });
+
+    function loadSettings() {
+        chrome.runtime.sendMessage({ type: 'GET_SETTINGS' }, (response) => {
+            if (response) {
+                updateToggle(friendNotificationsToggle, response.friendNotifications);
+                updateToggle(allTablesToggle, response.allTablesNotifications);
+            }
+        });
+    }
+
+    function toggleSetting(settingName, toggleElement) {
+        const isActive = toggleElement.classList.contains('active');
+        const newValue = !isActive;
+
+        updateToggle(toggleElement, newValue);
+
+        // Save the setting
+        const settings = {};
+        settings[settingName] = newValue;
+        chrome.runtime.sendMessage({
+            type: 'SAVE_SETTINGS',
+            data: settings
+        });
+    }
+
+    function updateToggle(toggleElement, isActive) {
+        if (isActive) {
+            toggleElement.classList.add('active');
+        } else {
+            toggleElement.classList.remove('active');
+        }
+    }
 
     function getFriendsFromPage() {
         try {

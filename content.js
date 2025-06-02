@@ -13,10 +13,10 @@
 
         // Check if it's our extension message
         if (event.data && event.data.source === 'hanabi-utilities') {
-            if (event.data.type === 'FRIEND_JOINED_TABLE') {
-                // Forward the message to background script
+            if (event.data.type === 'TABLE_EVENT') {
+                // Forward the table event to background script
                 chrome.runtime.sendMessage({
-                    type: 'FRIEND_JOINED_TABLE',
+                    type: 'TABLE_EVENT',
                     data: event.data.data
                 }, (response) => {
                     if (chrome.runtime.lastError) {

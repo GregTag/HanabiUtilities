@@ -10,7 +10,7 @@ This Chrome extension tracks your friends' activity on hanab.live and sends desk
 - 🌐 **All Tables Mode**: Optional notifications for all open tables without passwords
 - ⚙️ **Configurable Settings**: Toggle notifications on/off with instant updates
 - 🎯 **Smart Filtering**: Only notifies for tables you haven't joined and that haven't started yet
-- ⏰ **Duplicate Prevention**: Prevents spam notifications with cooldown system
+- 🔄 **Dynamic Updates**: Notifications update in-place when table status changes
 - 📊 **Status Dashboard**: Shows extension status and current friends list
 
 ## Installation
@@ -53,7 +53,7 @@ The extension hooks into hanab.live's internal callback system:
 ### Notification Logic
 
 - **Smart Detection**: Checks if any players in a table match your friends list
-- **Duplicate Prevention**: Uses a 30-second cooldown to prevent spam notifications
+- **Unified Tracking**: Each table has at most one active notification that updates dynamically
 - **Rich Notifications**: Shows friend names and table information
 - **Click to Focus**: Clicking notifications brings hanab.live tab to front
 - **Priority Levels**: Friend notifications have higher priority than general table notifications
@@ -109,16 +109,17 @@ HanabiUtilities/
 - **Responsive Settings**: Changes take effect immediately without page reload
 - **Centralized Logic**: All notification decisions happen in background script
 - **Clean Separation**: Inject script focuses only on data collection
-- **Better Performance**: Settings are loaded once per notification decision
+- **Dynamic Updates**: Notifications update in-place rather than creating duplicates
+- **Better Performance**: No cooldown management or periodic cleanup needed
 
 ### Customization
 
 You can modify the notification behavior by editing:
-- `NOTIFICATION_COOLDOWN` in `background.js` (default: 30 seconds)
 - Notification text format in the notification functions
 - Default settings in `defaultSettings` object
 
 ## Version History
 
+- **v1.2**: Unified notification system with dynamic updates
 - **v1.1**: Added configurable notification settings with instant updates
 - **v1.0**: Initial release with basic friend tracking and notifications

@@ -136,30 +136,67 @@
             backdrop-filter: blur(10px);
         }
 
+        .friends-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
         .friends-title {
             font-size: 14px;
             font-weight: 600;
-            margin-bottom: 10px;
             opacity: 0.9;
         }
 
         .friend-item {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 6px 10px;
+            background: rgba(87, 255, 87, 0.2);
+            border: 1px solid rgba(87, 255, 87, 0.3);
+            color: #b3ffb3;
+            padding: 8px 12px;
             border-radius: 6px;
             margin-bottom: 5px;
             font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .friend-item:hover {
+            background: rgba(87, 255, 87, 0.3);
+            border-color: rgba(87, 255, 87, 0.4);
+        }
+
+        .friend-item.muted {
+            background: rgba(255, 87, 87, 0.2);
+            border: 1px solid rgba(255, 87, 87, 0.3);
+            color: #ffb3b3;
+        }
+
+        .friend-item.muted:hover {
+            background: rgba(255, 87, 87, 0.3);
+            border-color: rgba(255, 87, 87, 0.4);
         }
 
         .friend-item:last-child {
             margin-bottom: 0;
         }
 
-        .no-friends {
-            text-align: center;
-            opacity: 0.7;
-            font-size: 12px;
-            font-style: italic;
+        .reset-filters-btn {
+            background: rgba(255, 87, 87, 0.3);
+            border: 1px solid rgba(255, 87, 87, 0.5);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .reset-filters-btn:hover {
+            background: rgba(255, 87, 87, 0.4);
         }
 
         .error {
@@ -236,7 +273,12 @@
         </div>
 
         <div class="friends-list">
-            <div class="friends-title">Your Friends:</div>
+            <div class="friends-header">
+                <div class="friends-title">Your Friends:</div>
+                <button id="reset-filters-btn" class="reset-filters-btn" style="display: none;">
+                    Reset
+                </button>
+            </div>
             <div id="friends-container">
                 <div class="no-friends">Loading friends list...</div>
             </div>

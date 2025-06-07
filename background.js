@@ -10,7 +10,8 @@ let hanabiTabId = null;
 // Default settings
 const defaultSettings = {
     friendNotifications: true,
-    allTablesNotifications: false
+    allTablesNotifications: false,
+    mutedFriends: []
 };
 
 // Listen for messages from content script
@@ -74,12 +75,16 @@ async function handleTableEvent(data) {
     // Check if conditions are met for showing notifications
     const conditionsMet = !joined && !running && playerCount > 0;
 
+    // Filter out muted friends
+    const mutedFriends = settings.mutedFriends || [];
+    const unmutedFriends = friends.filter(friend => !mutedFriends.includes(friend));
+
     // Determine if we should notify for this table
     let shouldNotify = false;
     let notificationType = null;
 
     if (conditionsMet) {
-        if (settings.friendNotifications && friends.length > 0) {
+        if (settings.friendNotifications && unmutedFriends.length > 0) {
             shouldNotify = true;
             notificationType = 'friend';
         } else if (settings.allTablesNotifications && !hasPassword) {
@@ -103,13 +108,16 @@ async function handleTableEvent(data) {
         return;
     }
 
+    // Update data to use only unmuted friends for notifications
+    const filteredData = { ...data, friends: unmutedFriends };
+
     // Check if we already have a notification for this table
     if (activeNotifications.has(tableId)) {
         // Update existing notification
-        await updateTableNotification(tableId, data, notificationType);
+        await updateTableNotification(tableId, filteredData, notificationType);
     } else {
         // Create new notification
-        await createTableNotification(tableId, data, notificationType);
+        await createTableNotification(tableId, filteredData, notificationType);
     }
 }
 

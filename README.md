@@ -7,6 +7,7 @@ This Chrome extension tracks your friends' activity on hanab.live and sends desk
 - 🎴 **Real-time Monitoring**: Tracks table updates in real-time
 - 👥 **Friend Detection**: Automatically detects when friends join tables
 - 🔔 **Desktop Notifications**: Sends notifications when friends join new tables
+- 🔇 **Friend Muting**: Selectively mute notifications from specific friends
 - 🌐 **All Tables Mode**: Optional notifications for all open tables without passwords
 - ⚙️ **Configurable Settings**: Toggle notifications on/off with instant updates
 - 🎯 **Smart Filtering**: Only notifies for tables you haven't joined and that haven't started yet
@@ -48,7 +49,15 @@ The extension hooks into hanab.live's internal callback system:
 
 - **Friend Notifications**: Get notified when friends join tables (enabled by default)
 - **All Open Tables**: Get notified for any open table without password (disabled by default)
+- **Friend Muting**: Click on any friend's name to toggle notifications from them
 - **Instant Updates**: Settings changes take effect immediately without page reload
+
+### Friend Management
+
+- **Mute Individual Friends**: Click on any friend's name in the popup to mute/unmute their notifications
+- **Visual Indicators**: Muted friends show with 🔇 icon, unmuted friends show with 🔔 icon
+- **Reset Filters**: Use "Reset All Muted Friends" button to unmute all friends at once
+- **Persistent Settings**: Muted friends list is saved and persists across browser sessions
 
 ### Notification Logic
 
@@ -75,7 +84,8 @@ The extension popup shows:
 - **Site Status**: Connection to hanab.live
 - **Friends Count**: Number of friends in your list
 - **Notification Settings**: Toggle switches for different notification types
-- **Friends List**: All your current friends
+- **Friends List**: All your current friends with mute/unmute functionality
+- **Reset Button**: Quick way to unmute all friends (only visible when friends are muted)
 
 ## Privacy & Security
 
@@ -120,6 +130,7 @@ You can modify the notification behavior by editing:
 
 ## Version History
 
+- **v1.3**: Added friend muting functionality with individual toggles and reset option
 - **v1.2**: Unified notification system with dynamic updates
 - **v1.1**: Added configurable notification settings with instant updates
 - **v1.0**: Initial release with basic friend tracking and notifications

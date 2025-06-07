@@ -6,6 +6,11 @@ document.addEventListener('DOMContentLoaded', async function () {
     const friendsContainer = document.getElementById('friends-container');
     const friendNotificationsToggle = document.getElementById('friend-notifications-toggle');
     const allTablesToggle = document.getElementById('all-tables-toggle');
+    const resetFiltersBtn = document.getElementById('reset-filters-btn');
+
+    // Store current friends list and muted friends
+    let currentFriends = [];
+    let mutedFriends = [];
 
     // Update extension status
     extensionStatus.textContent = 'Active';
@@ -21,6 +26,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     allTablesToggle.addEventListener('click', () => {
         toggleSetting('allTablesNotifications', allTablesToggle);
+    });
+
+    // Set up reset button event listener
+    resetFiltersBtn.addEventListener('click', async () => {
+        await resetMutedFriends();
     });
 
     // Check if we're on the correct site and get friends list
@@ -80,6 +90,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             if (response) {
                 updateToggle(friendNotificationsToggle, response.friendNotifications);
                 updateToggle(allTablesToggle, response.allTablesNotifications);
+                mutedFriends = response.mutedFriends || [];
+                updateFriendsDisplay(currentFriends); // Refresh display with muted status
             }
         } catch (error) {
             console.error('Error loading settings:', error);
@@ -164,14 +176,72 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function updateFriendsDisplay(friends) {
+        currentFriends = friends;
         friendsCount.textContent = friends.length;
 
         if (friends.length === 0) {
             friendsContainer.innerHTML = '<div class="no-friends">You have no friends added yet</div>';
+            resetFiltersBtn.style.display = 'none';
         } else {
-            friendsContainer.innerHTML = friends.map(friend =>
-                `<div class="friend-item">${escapeHtml(friend)}</div>`
-            ).join('');
+            const hasMutedFriends = mutedFriends.length > 0;
+            resetFiltersBtn.style.display = hasMutedFriends ? 'block' : 'none';
+
+            friendsContainer.innerHTML = friends.map(friend => {
+                const isMuted = mutedFriends.includes(friend);
+                return `<div class="friend-item ${isMuted ? 'muted' : ''}" data-friend="${escapeHtml(friend)}">
+                    ${escapeHtml(friend)}
+                </div>`;
+            }).join('');
+
+            // Add click handlers for each friend item
+            const friendItems = friendsContainer.querySelectorAll('.friend-item');
+            friendItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const friendName = item.getAttribute('data-friend');
+                    toggleFriendMute(friendName);
+                });
+            });
+        }
+    }
+
+    async function toggleFriendMute(friendName) {
+        const isMuted = mutedFriends.includes(friendName);
+
+        if (isMuted) {
+            // Unmute friend
+            mutedFriends = mutedFriends.filter(f => f !== friendName);
+        } else {
+            // Mute friend
+            mutedFriends.push(friendName);
+        }
+
+        // Save updated muted friends list
+        try {
+            await chrome.runtime.sendMessage({
+                type: 'SAVE_SETTINGS',
+                data: { mutedFriends: mutedFriends }
+            });
+
+            // Update display
+            updateFriendsDisplay(currentFriends);
+        } catch (error) {
+            console.error('Error saving muted friends:', error);
+        }
+    }
+
+    async function resetMutedFriends() {
+        mutedFriends = [];
+
+        try {
+            await chrome.runtime.sendMessage({
+                type: 'SAVE_SETTINGS',
+                data: { mutedFriends: [] }
+            });
+
+            // Update display
+            updateFriendsDisplay(currentFriends);
+        } catch (error) {
+            console.error('Error resetting muted friends:', error);
         }
     }
 

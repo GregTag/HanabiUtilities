@@ -47,6 +47,8 @@
                 playerCount: data.players.length,
                 friends: friendsInTable,
                 hasPassword: data.passwordProtected,
+                joined: data.joined,
+                running: data.running,
                 timestamp: Date.now()
             }
         }, window.location.origin);
@@ -57,6 +59,12 @@
         console.log('Hanabi Utilities: Waiting for globals...');
         await waitForGlobals();
         console.log('Hanabi Utilities: Globals available, setting up tracker');
+
+        // Send initialization message to register this tab
+        window.postMessage({
+            source: 'hanabi-utilities',
+            type: 'INIT_TAB'
+        }, window.location.origin);
 
         // Store original callback if it exists
         const originalTableCallback = window.globals2.conn.callbacks.table;
@@ -69,8 +77,8 @@
             console.log(data);
             // Our tracking logic
             try {
-                // Check conditions: not joined, not running, has players
-                if (!data.joined && !data.running && data.players && data.players.length > 0) {
+                // Send all table events - let background script decide what to do
+                if (data.players) {
                     sendTableEvent(data);
                 }
             } catch (error) {

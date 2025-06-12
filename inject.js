@@ -78,9 +78,7 @@
             // Our tracking logic
             try {
                 // Send all table events - let background script decide what to do
-                if (data.players) {
-                    sendTableEvent(data);
-                }
+                sendTableEvent(data);
             } catch (error) {
                 console.error('Hanabi Utilities: Error in table callback:', error);
             }

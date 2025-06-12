@@ -44,7 +44,7 @@
             data: {
                 tableName: data.name,
                 tableId: data.id,
-                playerCount: data.players.length,
+                players: data.players,
                 friends: friendsInTable,
                 hasPassword: data.passwordProtected,
                 joined: data.joined,

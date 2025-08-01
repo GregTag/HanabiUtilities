@@ -54,6 +54,21 @@
         }, window.location.origin);
     }
 
+    // Function to send chat event to background for processing
+    function sendChatEvent(data) {
+        window.postMessage({
+            source: 'hanabi-utilities',
+            type: 'CHAT_EVENT',
+            data: {
+                message: data.msg,
+                sender: data.who,
+                server: data.server,
+                room: data.room,
+                timestamp: Date.now()
+            }
+        }, window.location.origin);
+    }
+
     // Main initialization function
     async function init() {
         console.log('Hanabi Utilities: Waiting for globals...');
@@ -68,8 +83,9 @@
 
         // Store original callback if it exists
         const originalTableCallback = window.globals2.conn.callbacks.table;
+        const originalChatCallback = window.globals2.conn.callbacks.chat;
 
-        // Our custom callback wrapper
+        // Our custom callback wrapper for table events
         window.globals2.conn.callbacks.table = function (data) {
             // Call original callback first
             originalTableCallback(data);
@@ -84,7 +100,22 @@
             }
         };
 
-        console.log('Hanabi Utilities: Successfully hooked into table callback');
+        // Our custom callback wrapper for chat events
+        window.globals2.conn.callbacks.chat = function (data) {
+            // Call original callback first
+            originalChatCallback(data);
+
+            console.log(data);
+            // Our tracking logic
+            try {
+                // Send all chat events - let background script decide what to do
+                sendChatEvent(data);
+            } catch (error) {
+                console.error('Hanabi Utilities: Error in chat callback:', error);
+            }
+        };
+
+        console.log('Hanabi Utilities: Successfully hooked into table and chat callbacks');
     }
 
     // Start the extension

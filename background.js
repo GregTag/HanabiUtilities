@@ -20,6 +20,7 @@ class HanabiUtilities {
             friendNotifications: true,      // Notify when friends join lobby tables
             allTablesNotifications: false,  // Notify for all open tables without passwords
             preGameNotifications: true,     // Notify for player changes in joined tables
+            messageNotifications: true,     // Notify for personal messages
             mutedFriends: []               // List of friends to exclude from notifications
         };
     }
@@ -91,6 +92,10 @@ class HanabiUtilities {
             if (message.type === 'TABLE_EVENT') {
                 // Process table updates from inject script
                 await this.handleTableEvent(message.data);
+                sendResponse({ success: true });
+            } else if (message.type === 'CHAT_EVENT') {
+                // Process chat messages from inject script
+                await this.handleChatEvent(message.data);
                 sendResponse({ success: true });
             } else if (message.type === 'INIT_TAB') {
                 // Register the hanab.live tab for tracking
@@ -245,8 +250,12 @@ class HanabiUtilities {
         // Collect all notifications to clear concurrently
         const notificationsToClear = [];
         
+        // Only clear notifications if the user is either:
+        // - On the lobby page (clears all notifications)
+        // - Viewing a specific game's pre-game page (clears notifications for that game)
+        // - Viewing messages notifications 
         for (const [notificationId, data] of this.activeNotifications) {
-            if (onLobbyPage || this.isOnPreGamePage(data.tableId)) { 
+            if (onLobbyPage || data.message !== undefined || this.isOnPreGamePage(data.tableId)) { 
                 notificationsToClear.push(notificationId);
             }
         }
@@ -286,6 +295,46 @@ class HanabiUtilities {
         }
 
         // Send or update the notification
+        await this.executeNotification(notificationId, notification);
+    }
+
+    // Process chat events from inject script and determine notification actions
+    async handleChatEvent(data) {
+        console.log('Hanabi Utilities: Processing chat event:', data);
+
+        // Parse tableId from room field (format: "table1234", "lobby", or empty for personal)
+        const isLobbyMessage = data.room === 'lobby';
+
+        if (data.room.startsWith('table')) {
+            data.tableId = parseInt(data.room.replace('table', '')); // Extract numeric ID
+        } else {
+            data.tableId = -1; // Personal messages
+        }
+
+        // Don't notify for lobby or server messages
+        if (isLobbyMessage || data.server) {
+            console.log('Hanabi Utilities: Skipping lobby or server message notification');
+            return;
+        }
+
+        const settings = await this.getSettings();
+        if (!settings.messageNotifications) {
+            console.log('Hanabi Utilities: Message notifications disabled');
+            return;
+        }
+
+        // Suppress notifications if user is actively viewing hanab.live
+        const tabActiveAndFocused = await this.isTabActiveAndFocused();
+        if (tabActiveAndFocused) {
+            console.log('Hanabi Utilities: Suppressing message notification - user is actively viewing hanab.live');
+            return;
+        }
+
+        // Create message notification
+        const notification = new MessageNotification(data);
+        const notificationId = String(data.tableId);
+
+        console.log(`Hanabi Utilities: Creating message notification`);
         await this.executeNotification(notificationId, notification);
     }
 
@@ -495,6 +544,70 @@ class PreGameNotification {
             this.playersChanges.left,
             this.data.players.length
         );
+    }
+}
+
+// Notification class for chat messages
+class MessageNotification {
+    constructor(data) {
+        this.data = data;
+    }
+
+    // Build notification content for personal messages
+    static buildPersonalMessageContent(sender, message) {
+        // Truncate long messages
+        const maxLength = 100;
+        let displayMessage = message;
+        if (message.length > maxLength) {
+            displayMessage = message.substring(0, maxLength) + '...';
+        }
+
+        return {
+            title: `New personal message from ${sender}`,
+            message: displayMessage,
+            priority: 2 // High priority for personal messages
+        };
+    }
+
+    // Build notification content for table messages
+    static buildTableMessageContent(sender, message) {
+        // Truncate long messages
+        const maxLength = 120;
+        let displayMessage = message;
+        if (message.length > maxLength) {
+            displayMessage = message.substring(0, maxLength) + '...';
+        }
+
+        return {
+            title: `New message from ${sender}`,
+            message: displayMessage,
+            priority: 1 // Lower priority for table messages
+        };
+    }
+
+    // Message notifications should always notify if settings allow
+    async shouldNotify(utilities) {
+        return true; // Already filtered in handleChatEvent
+    }
+
+    // Build the notification data structure
+    build() {
+        if (this.data.tableId === -1) {
+            return MessageNotification.buildPersonalMessageContent(
+                this.data.sender,
+                this.data.message
+            );
+        } else {
+            return MessageNotification.buildTableMessageContent(
+                this.data.sender,
+                this.data.message
+            );
+        }
+    }
+
+    // Message notifications don't need change detection (always unique)
+    hasDataChanged(oldData) {
+        return true;
     }
 }
 

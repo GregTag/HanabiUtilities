@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Hanabi Utilities",
-    "version": "1.5",
+    "version": "1.6",
     "description": "Track friends activity on hanab.live and get notifications when they join tables",
     "permissions": [
         "notifications",
@@ -9,9 +9,7 @@
         "storage"
     ],
     "host_permissions": [
-        "https://hanab.live/lobby",
-        "https://hanab.live/pre-game",
-        "https://hanab.live/game"
+        "https://hanab.live/*"
     ],
     "content_scripts": [
         {

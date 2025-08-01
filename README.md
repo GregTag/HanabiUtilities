@@ -7,7 +7,8 @@ This Chrome extension tracks your friends' activity on hanab.live and sends desk
 - 🎴 **Real-time Monitoring**: Tracks table updates in real-time using hanab.live's internal callback system
 - 👥 **Friend Detection**: Automatically detects when friends join tables using your friends list
 - 🔔 **Desktop Notifications**: Sends rich desktop notifications with friend names and table details
-- 🔇 **Friend Muting**: Selectively mute notifications from specific friends with visual indicators
+- � **Message Notifications**: Get notified for personal and table chat messages with smart filtering
+- �🔇 **Friend Muting**: Selectively mute notifications from specific friends with visual indicators
 - 🌐 **All Tables Mode**: Optional notifications for all open tables without passwords
 - ⚙️ **Configurable Settings**: Toggle notifications on/off with instant updates (no page reload required)
 - 🎯 **Smart Filtering**: Only notifies for tables you haven't joined and that haven't started yet
@@ -38,11 +39,11 @@ This Chrome extension tracks your friends' activity on hanab.live and sends desk
 
 ### Technical Implementation
 
-The extension uses a multi-layered architecture for reliable table monitoring:
+The extension uses a multi-layered architecture for reliable table and chat monitoring:
 
-1. **Callback Interception**: Wraps `window.globals2.conn.callbacks.table` to monitor all table updates
+1. **Callback Interception**: Wraps `window.globals2.conn.callbacks.table` and `window.globals2.conn.callbacks.chat` to monitor all events
 2. **Friend List Access**: Reads your friends list from `window.globals2.friends`
-3. **Event Processing**: Inject script sends all table events to background script via content script
+3. **Event Processing**: Inject script sends all table and chat events to background script via content script
 4. **Settings-Based Filtering**: Background script applies current user settings before creating notifications
 5. **Smart Suppression**: Automatically detects when you're actively viewing hanab.live to prevent spam
 6. **Dynamic Updates**: Existing notifications are updated in-place rather than creating duplicates
@@ -66,6 +67,14 @@ The extension processes table events through a sophisticated decision tree:
 - **Smart Timing**: Only notifies after establishing baseline (first event is silent)
 - **Page Detection**: Suppresses when viewing the specific table's pre-game page
 
+#### Message Notifications
+
+- **Chat Monitoring**: Intercepts all chat messages using hanab.live's chat callback
+- **Context-Aware Filtering**: Distinguishes between personal messages, table messages, and lobby messages
+- **Smart Suppression**: Filters out lobby messages and server messages automatically
+- **Template Differentiation**: Personal and table messages use different notification templates
+- **Room Detection**: Parses table IDs from room information to provide context
+
 ### Smart Notification Suppression
 
 The extension intelligently prevents notification spam using multi-layer detection:
@@ -84,6 +93,7 @@ This ensures you only get notified when the information would actually be useful
 - **Friend Notifications**: Get notified when friends join lobby tables (enabled by default)
 - **All Open Tables**: Get notified for any open table without password (disabled by default)
 - **Pre-Game Activity**: Get notified when players join/leave your tables (enabled by default)
+- **Message Notifications**: Get notified for personal and table chat messages (enabled by default)
 - **Friend Muting**: Click on any friend's name to toggle notifications from them
 - **Instant Updates**: All settings changes take effect immediately without page reload
 
@@ -112,6 +122,7 @@ This ensures you only get notified when the information would actually be useful
    - Friends join new lobby tables (if Friend Notifications enabled)
    - Any open table becomes available (if All Open Tables enabled)
    - Players join/leave tables you're in (if Pre-Game Activity enabled)
+   - Someone sends a personal or table message (if Message Notifications enabled)
    - You're not actively viewing the relevant page
 5. **Click notifications** to return to hanab.live
 
@@ -197,6 +208,7 @@ Enable Chrome's developer console to see detailed logging from the extension, in
 
 ## Version History
 
+- **v1.6**: Added message notifications for personal and table chat messages
 - **v1.5**: Added pre-game activity tracking and improved notification logic
 - **v1.4**: Added smart notification suppression when actively viewing lobby
 - **v1.3**: Added friend muting functionality with individual toggles and reset option

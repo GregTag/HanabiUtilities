@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const friendNotificationsToggle = document.getElementById('friend-notifications-toggle');
     const allTablesToggle = document.getElementById('all-tables-toggle');
     const preGameToggle = document.getElementById('pre-game-toggle');
+    const messageNotificationsToggle = document.getElementById('message-notifications-toggle');
     const resetFiltersBtn = document.getElementById('reset-filters-btn');
 
     // Store current friends list and muted friends
@@ -31,6 +32,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     preGameToggle.addEventListener('click', () => {
         toggleSetting('preGameNotifications', preGameToggle);
+    });
+
+    messageNotificationsToggle.addEventListener('click', () => {
+        toggleSetting('messageNotifications', messageNotificationsToggle);
     });
 
     // Set up reset button event listener
@@ -96,6 +101,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 updateToggle(friendNotificationsToggle, response.friendNotifications);
                 updateToggle(allTablesToggle, response.allTablesNotifications);
                 updateToggle(preGameToggle, response.preGameNotifications);
+                updateToggle(messageNotificationsToggle, response.messageNotifications);
                 mutedFriends = response.mutedFriends || [];
                 updateFriendsDisplay(currentFriends); // Refresh display with muted status
             }
